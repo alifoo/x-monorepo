@@ -2,6 +2,7 @@ import type { UserDTO } from "../types/user.schema.js";
 import { userRepository } from "../repositories/user.repository.js";
 import type { User } from "../generated/prisma/index.js";
 import { supabaseAdmin } from "../config/supabase.js";
+import { env } from "../config/env.js";
 import type {
   InviteUserParams,
   UpdateUserParams,
@@ -32,13 +33,19 @@ export const userService = {
     email,
     role,
   }: InviteUserParams): Promise<UserDTO | null> {
-    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(
-      email,
-      { data: { name } },
-    );
-    if (error) throw error;
+    const authResult =
+      env.NODE_ENV === "production"
+        ? await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+            data: { name },
+          })
+        : await supabaseAdmin.auth.admin.createUser({
+            email,
+            email_confirm: true,
+            user_metadata: { name },
+          });
+    if (authResult.error) throw authResult.error;
 
-    const userId = data.user.id;
+    const userId = authResult.data.user.id;
     const roleRow = await userRepository.findRoleByName(role);
     await userRepository.assignRole(userId, roleRow.id);
     return userService.getById(userId);
