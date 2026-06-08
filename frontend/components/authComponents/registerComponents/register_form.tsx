@@ -8,16 +8,28 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { formStyles } from '@/components/authComponents/formStyles';
 
 type RegisterFormProps = {
-  onSubmit: (name: string, email: string, password: string, confirmPassword: string) => void;
+  onSubmit: (
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => void | Promise<void>;
+  isLoading?: boolean;
+  errorMessage?: string | null;
 };
 
-export function RegisterForm({ onSubmit }: RegisterFormProps) {
+export function RegisterForm({
+  onSubmit,
+  isLoading = false,
+  errorMessage = null,
+}: RegisterFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const placeholderTextColor = useThemeColor({}, 'placeholderTextColor');
   const labelColor = useThemeColor({}, 'label');
+  const errorColor = useThemeColor({}, 'error');
 
   return (
     <ThemedView style={formStyles.container}>
@@ -71,7 +83,17 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
         iconName="lock.fill"
       />
 
-      <RegisterButton onPress={() => onSubmit(name, email, password, confirmPassword)} />
+      {errorMessage ? (
+        <ThemedText style={[formStyles.errorText, { color: errorColor }]}>
+          {errorMessage}
+        </ThemedText>
+      ) : null}
+
+      <RegisterButton
+        onPress={() => void onSubmit(name, email, password, confirmPassword)}
+        disabled={isLoading}
+        label={isLoading ? 'Cadastrando...' : 'Cadastrar'}
+      />
     </ThemedView>
   );
 }

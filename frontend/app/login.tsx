@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { LoginForm } from '@/components/authComponents/loginComponents/login_form';
 import { LoginHeader } from '@/components/authComponents/auth_header';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { AuthError } from '@/services/auth';
 
 export default function LoginScreen() {

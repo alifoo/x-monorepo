@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider, useAuth } from '@/providers/AuthProvider';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
 
 SplashScreen.preventAutoHideAsync();
 

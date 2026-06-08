@@ -1,4 +1,10 @@
-import { AuthError, type AuthService, type AuthUser, type LoginCredentials } from './types';
+import {
+  AuthError,
+  type AuthService,
+  type AuthUser,
+  type LoginCredentials,
+  type RegisterCredentials,
+} from './types';
 
 const MOCK_USER: AuthUser = {
   id: 'mock-healthcare-professional',
@@ -35,6 +41,33 @@ export function createMockAuthService(): AuthService {
       }
 
       currentUser = { ...MOCK_USER, email: normalizedEmail };
+      return currentUser;
+    },
+
+    async register({ name, email, password }: RegisterCredentials) {
+      await delay(700);
+
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedName = name.trim();
+
+      if (!normalizedName) {
+        throw new AuthError('Informe seu nome.');
+      }
+
+      if (!normalizedEmail.includes('@')) {
+        throw new AuthError('Informe um e-mail profissional válido.');
+      }
+
+      if (password.length < 6) {
+        throw new AuthError('A senha deve ter pelo menos 6 caracteres.');
+      }
+
+      currentUser = {
+        id: 'mock-registered-user',
+        name: normalizedName,
+        email: normalizedEmail,
+      };
+
       return currentUser;
     },
 

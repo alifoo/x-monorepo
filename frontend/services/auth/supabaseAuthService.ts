@@ -3,7 +3,13 @@ import type { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 import { getApiBaseUrl } from '@/config/env';
 import { getSupabaseClient } from '@/config/supabase';
 import { createApiClient } from '@/services/api/client';
-import { AuthError, type AuthService, type AuthUser, type LoginCredentials } from './types';
+import {
+  AuthError,
+  type AuthService,
+  type AuthUser,
+  type LoginCredentials,
+  type RegisterCredentials,
+} from './types';
 
 type UserDto = AuthUser;
 
@@ -16,6 +22,12 @@ function mapSupabaseAuthError(error: SupabaseAuthError): AuthError {
 
   if (normalized.includes('email not confirmed')) {
     return new AuthError('Confirme seu e-mail antes de entrar.');
+  }
+
+  if (normalized.includes('user already registered')) {
+    return new AuthError(
+      'Este e-mail já possui cadastro. Verifique seu convite ou faça login.',
+    );
   }
 
   return new AuthError(error.message);
@@ -45,6 +57,58 @@ export function createSupabaseAuthService(): AuthService {
       const accessToken = data.session?.access_token;
       if (!accessToken) {
         throw new AuthError('Não foi possível iniciar a sessão. Tente novamente.');
+      }
+
+      try {
+        return await fetchCurrentUser(accessToken);
+      } catch (error) {
+        await supabase.auth.signOut();
+
+        if (error instanceof AuthError) {
+          throw error;
+        }
+
+        throw new AuthError('Não foi possível carregar seu perfil. Tente novamente.');
+      }
+    },
+
+    async register({ name, email, password }: RegisterCredentials) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedName = name.trim();
+
+      if (!normalizedName) {
+        throw new AuthError('Informe seu nome.');
+      }
+
+      if (!normalizedEmail.includes('@')) {
+        throw new AuthError('Informe um e-mail profissional válido.');
+      }
+
+      if (password.length < 6) {
+        throw new AuthError('A senha deve ter pelo menos 6 caracteres.');
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          data: { name: normalizedName },
+        },
+      });
+
+      if (error) {
+        throw mapSupabaseAuthError(error);
+      }
+
+      if (data.user?.identities?.length === 0) {
+        throw new AuthError(
+          'Este e-mail já possui cadastro. Verifique seu convite ou faça login.',
+        );
+      }
+
+      const accessToken = data.session?.access_token;
+      if (!accessToken) {
+        throw new AuthError('Cadastro iniciado. Confirme seu e-mail antes de entrar.');
       }
 
       try {

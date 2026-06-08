@@ -7,16 +7,22 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 type RegisterButtonProps = {
   onPress: () => void;
   label?: string;
+  disabled?: boolean;
 };
 
-export function RegisterButton({ onPress, label = 'Cadastrar' }: RegisterButtonProps) {
+export function RegisterButton({
+  onPress,
+  label = 'Cadastrar',
+  disabled = false,
+}: RegisterButtonProps) {
   const tint = useThemeColor({}, 'buttonColor');
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: tint }]}
+      style={[styles.button, { backgroundColor: tint, opacity: disabled ? 0.7 : 1 }]}
       onPress={onPress}
       activeOpacity={0.85}
+      disabled={disabled}
     >
       <ThemedText style={styles.label}>{label}</ThemedText>
       <IconSymbol name="arrow.right.circle.fill" size={20} color="#FFFFFF" />
