@@ -141,6 +141,7 @@ model AssessmentSymptom {
 
   assessment Assessment @relation(fields: [assessmentId], references: [id])
   symptom    Symptom    @relation(fields: [symptomId], references: [id])
+  isPresent  Boolean    @map("is_present")
 
   @@id([assessmentId, symptomId])
   @@map("assessment_symptom")
