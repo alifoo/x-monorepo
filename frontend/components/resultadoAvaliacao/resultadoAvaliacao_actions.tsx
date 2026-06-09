@@ -5,19 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-type ResultadoAvaliacao_ActionsProps = {
-    onDownloadPDF?: () => void | Promise<void>;
-    onBackHome?: () => void;
-    onNewEvaluation?: () => void;
-    isLoading?: boolean;
-};
-
-export function ResultadoAvaliacao_Actions({
-    onDownloadPDF,
-    onBackHome,
-    onNewEvaluation,
-    isLoading = false,
-}: ResultadoAvaliacao_ActionsProps) {
+export function ResultadoAvaliacao_Actions() {
     const buttonColor = useThemeColor({}, 'buttonColor');
     const labelColor = useThemeColor({}, 'label');
     const backgroundColor = useThemeColor(
@@ -28,31 +16,17 @@ export function ResultadoAvaliacao_Actions({
 
     return (
         <ThemedView style={styles.container}>
-            {/* Primary Button - Download PDF */}
             <TouchableOpacity
-                style={[
-                    styles.primaryButton,
-                    { backgroundColor: buttonColor },
-                    isLoading && styles.buttonDisabled,
-                ]}
-                onPress={onDownloadPDF}
-                disabled={isLoading}
+                style={[styles.primaryButton, { backgroundColor: buttonColor }]}
                 activeOpacity={0.85}
             >
                 <IconSymbol name="arrow.down.circle.fill" size={20} color="#FFFFFF" />
                 <ThemedText style={styles.primaryLabel}>Baixar Relatório (PDF)</ThemedText>
             </TouchableOpacity>
 
-            {/* Secondary Buttons Row */}
             <View style={styles.secondaryButtonsRow}>
-                {/* Back to Home Button */}
                 <TouchableOpacity
-                    style={[
-                        styles.secondaryButton,
-                        { backgroundColor, borderColor: labelColor },
-                    ]}
-                    onPress={onBackHome}
-                    disabled={isLoading}
+                    style={[styles.secondaryButton, { backgroundColor, borderColor: labelColor }]}
                     activeOpacity={0.85}
                 >
                     <IconSymbol name="house.fill" size={18} color={labelColor} />
@@ -61,14 +35,8 @@ export function ResultadoAvaliacao_Actions({
                     </ThemedText>
                 </TouchableOpacity>
 
-                {/* New Evaluation Button */}
                 <TouchableOpacity
-                    style={[
-                        styles.secondaryButton,
-                        { backgroundColor, borderColor: greenColor },
-                    ]}
-                    onPress={onNewEvaluation}
-                    disabled={isLoading}
+                    style={[styles.secondaryButton, { backgroundColor, borderColor: greenColor }]}
                     activeOpacity={0.85}
                 >
                     <IconSymbol name="plus.circle.fill" size={18} color={greenColor} />
@@ -124,8 +92,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
         lineHeight: 16,
-    },
-    buttonDisabled: {
-        opacity: 0.6,
     },
 });

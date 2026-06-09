@@ -11,10 +11,6 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { formStyles } from '@/components/authComponents/formStyles';
 
 type ResultadoAvaliacao_FormProps = {
-    onDownloadPDF?: () => void | Promise<void>;
-    onBackHome?: () => void;
-    onNewEvaluation?: () => void;
-    isLoading?: boolean;
     score?: number;
     maxScore?: number;
     alertMessage?: string;
@@ -25,10 +21,6 @@ type ResultadoAvaliacao_FormProps = {
 };
 
 export function ResultadoAvaliacao_Form({
-    onDownloadPDF,
-    onBackHome,
-    onNewEvaluation,
-    isLoading = false,
     score = 0.68,
     maxScore = 1.0,
     alertMessage = 'O resultado sugere possível manifestação de características relacionadas à Síndrome de X Frágil.',
@@ -69,12 +61,7 @@ export function ResultadoAvaliacao_Form({
 
                 <ResultadoAvaliacao_Details items={detailItems} />
 
-                <ResultadoAvaliacao_Actions
-                    onDownloadPDF={onDownloadPDF}
-                    onBackHome={onBackHome}
-                    onNewEvaluation={onNewEvaluation}
-                    isLoading={isLoading}
-                />
+                <ResultadoAvaliacao_Actions />
             </ThemedView>
         </ScrollView>
     );
