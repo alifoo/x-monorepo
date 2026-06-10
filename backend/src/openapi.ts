@@ -2,6 +2,7 @@ import { createDocument, type oas31 } from "zod-openapi";
 import { userPaths } from "./routes/user.docs.js";
 import { symptomPaths } from "./routes/symptoms.docs.js";
 import { patientPaths } from "./routes/patient.docs.js";
+import { reportPaths } from "./routes/report.docs.js";
 
 export const openApiDocument: oas31.OpenAPIObject = createDocument({
   openapi: "3.1.0",
@@ -20,6 +21,7 @@ export const openApiDocument: oas31.OpenAPIObject = createDocument({
     { name: "Users", description: "User management and invitations." },
     { name: "Symptoms", description: "Symptoms filtering." },
     { name: "Patients", description: "Patient records." },
+    { name: "Reports", description: "Geração de relatórios agregados e PDFs." },
   ],
   security: [{ bearerAuth: [] }],
   components: {
@@ -86,5 +88,6 @@ export const openApiDocument: oas31.OpenAPIObject = createDocument({
     ...userPaths,
     ...symptomPaths,
     ...patientPaths,
+    ...reportPaths,
   },
 });

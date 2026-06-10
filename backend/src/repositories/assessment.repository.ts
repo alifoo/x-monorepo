@@ -67,7 +67,7 @@ export const assessmentRepository = {
       const recordsSintomas = data.sintomas.map((s) => ({
         assessmentId: assessment.id,
         symptomId: s.id,
-        symptomPresent: s.presente,
+        isPresent: s.presente,
       }));
 
       await tx.assessmentSymptom.createMany({
