@@ -1,5 +1,8 @@
 import { guardianRepository } from "../repositories/guardian.repository.js";
-import type { CreateGuardianInput, UpdateGuardianInput } from "../types/guardian.schema.js";
+import type {
+  CreateGuardianInput,
+  UpdateGuardianInput,
+} from "../types/guardian.schema.js";
 
 export const guardianService = {
   async getById(id: string) {
