@@ -16,7 +16,7 @@ export const guardianController = {
     try {
       const guardian = await guardianService.create(req.body);
       res.status(201).json(guardian);
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002"
@@ -34,7 +34,7 @@ export const guardianController = {
         return res.status(404).json({ error: "Responsável não encontrado" });
       }
       res.json(guardian);
-    } catch (error) {
+    } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002"
