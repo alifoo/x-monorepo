@@ -11,6 +11,7 @@ import { userRouter } from "./routes/user.routes.js";
 import { symptomRouter } from "./routes/symptoms.routes.js";
 import { patientRouter } from "./routes/patient.routes.js";
 import { reportRouter } from "./routes/report.routes.js";
+import { guardianRouter } from "./routes/guardian.routes.js";
 import { supabaseAdmin } from "./config/supabase.js";
 import { openApiDocument } from "./openapi.js";
 
@@ -44,6 +45,7 @@ if (env.NODE_ENV !== "production") {
 app.use("/users", userRouter);
 app.use("/symptoms", symptomRouter);
 app.use("/patients", patientRouter);
+app.use("/guardians", guardianRouter);
 app.use("/reports", reportRouter);
 
 app.get("/health", async (_req, res) => {
