@@ -12,7 +12,18 @@ export function validate(schema: ZodType, target: Target = "body") {
         issues: result.error.issues,
       });
     }
-    req[target] = result.data;
+    if (target === "query") {
+      // Express 5 defines req.query as a getter-only prototype property;
+      // plain assignment throws, so shadow it with an own property.
+      Object.defineProperty(req, "query", {
+        value: result.data,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+      });
+    } else {
+      req[target] = result.data;
+    }
     next();
   };
 }
