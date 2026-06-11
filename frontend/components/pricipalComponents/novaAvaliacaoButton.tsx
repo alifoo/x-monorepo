@@ -2,14 +2,14 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 type Props = {
 onPress: () => void;
 };
 
 export function NovaAvaliacaoButton({ onPress }: Props) {
-const corBotao = Colors.light.corBotao;
+const corBotao = useThemeColor({}, 'buttonColor');
 
 return (
     <TouchableOpacity

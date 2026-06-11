@@ -1,52 +1,63 @@
-import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { useRouter } from "expo-router";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 
-import { ThemedView } from '@/components/themed-view';
-import { LoginForm } from '@/components/authComponents/loginComponents/login_form';
-import { LoginHeader } from '@/components/authComponents/auth_header';
-import { useAuth } from '@/hooks/useAuth';
-import { AuthError } from '@/services/auth';
+import { LoginForm } from "@/components/authComponents/loginComponents/login_form";
+import { LoginHeader } from "@/components/authComponents/auth_header";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthError } from "@/services/auth";
+import { ThemedView } from "@/components/themed-view";
 
 export default function LoginScreen() {
-  const { signIn, isSigningIn } = useAuth();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleLogin = async (email: string, password: string) => {
-    setErrorMessage(null);
-
-    try {
-      await signIn({ email, password });
-    } catch (error) {
-      if (error instanceof AuthError) {
-        setErrorMessage(error.message);
-        return;
-      }
-
-      setErrorMessage('Não foi possível entrar. Tente novamente.');
-    }
+  const handleLogin = (email: string, password: string) => {
+    // sua lógica de autenticação aqui
+    console.log("Login:", email, password);
+    router.replace("/(tabs)");
   };
 
   const handleForgotPassword = () => {
-    console.log('Esqueci minha senha');
+    console.log("Esqueci minha senha");
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <LoginHeader />
-      <LoginForm
-        onSubmit={handleLogin}
-        onForgotPassword={handleForgotPassword}
-        isLoading={isSigningIn}
-        errorMessage={errorMessage}
-      />
+    <ThemedView style={styles.screen}>
+      <KeyboardAvoidingView
+        style={styles.keyboard}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <LoginHeader />
+          <LoginForm
+            onSubmit={handleLogin}
+            onForgotPassword={handleForgotPassword}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    paddingHorizontal: 28,
-    justifyContent: 'center',
+  },
+  keyboard: {
+    flex: 1,
+  },
+  container: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 24,
+    paddingHorizontal: 40,
+    gap: 20,
   },
 });
