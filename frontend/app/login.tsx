@@ -8,8 +8,6 @@ import {
 
 import { LoginForm } from "@/components/authComponents/loginComponents/login_form";
 import { LoginHeader } from "@/components/authComponents/auth_header";
-import { useAuth } from "@/hooks/useAuth";
-import { AuthError } from "@/services/auth";
 import { ThemedView } from "@/components/themed-view";
 
 export default function LoginScreen() {
