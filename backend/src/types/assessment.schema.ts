@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validador do Payload de Criação (POST /evaluations)
 export const createEvaluationSchema = z
   .object({
     patientId: z
@@ -17,18 +16,20 @@ export const createEvaluationSchema = z
       )
       .min(1)
       .meta({
-        description: "Lista de sintomas com marcação de presença obrigatória.",
+        description:
+          "Todos os sintomas aplicáveis ao sexo do paciente, com marcação de presença (11 para f, 12 para m).",
       }),
   })
   .meta({ id: "CreateEvaluation" });
 
-// Validador de Query Params para Listagem/Filtros (GET /evaluations)
+const isoDateOrDatetime = z.union([z.iso.date(), z.iso.datetime()]);
+
 export const getEvaluationsQuerySchema = z
   .object({
     patientId: z.uuid().optional(),
-    resultado: z.enum(["SUSPEITO", "BAIXO_RISCO"]).optional(),
-    dataInicio: z.string().datetime().optional(),
-    dataFim: z.string().datetime().optional(),
+    resultado: z.enum(["suspected", "low_risk"]).optional(),
+    dataInicio: isoDateOrDatetime.optional(),
+    dataFim: isoDateOrDatetime.optional(),
   })
   .meta({ id: "GetEvaluationsQuery" });
 
@@ -36,19 +37,39 @@ export const getEvaluationParamsSchema = z.object({
   id: z.uuid().meta({ description: "ID da avaliação" }),
 });
 
-// Schema de Saída (DTO) formatado de acordo com a spec
-export const evaluationResponseSchema = z
+export const evaluationSymptomSchema = z
+  .object({
+    symptomId: z.uuid(),
+    name: z.string().meta({ example: "Macroorquidismo" }),
+    isPresent: z.boolean(),
+  })
+  .meta({ id: "EvaluationSymptom" });
+
+export const evaluationDtoSchema = z
   .object({
     id: z.uuid(),
     userId: z.uuid(),
     patientId: z.uuid(),
-    score: z.number(),
-    screeningResult: z.enum(["SUSPEITO", "BAIXO_RISCO"]),
-    assessmentDate: z.string().datetime(),
-    appliedThreshold: z.number(),
+    sessionNumber: z.number().int().meta({
+      description:
+        "Posição cronológica desta avaliação no histórico do paciente (1 = primeira).",
+      example: 2,
+    }),
+    score: z.number().nullable().meta({ example: 0.61 }),
+    screeningResult: z.enum(["suspected", "low_risk"]).nullable(),
+    appliedThreshold: z.number().nullable().meta({ example: 0.56 }),
+    assessmentDate: z.iso.datetime(),
   })
   .meta({ id: "Evaluation" });
+
+export const evaluationDetailDtoSchema = evaluationDtoSchema
+  .extend({
+    symptoms: evaluationSymptomSchema.array(),
+  })
+  .meta({ id: "EvaluationDetail" });
 
 export type CreateEvaluationInput = z.infer<typeof createEvaluationSchema>;
 export type GetEvaluationsQuery = z.infer<typeof getEvaluationsQuerySchema>;
 export type GetEvaluationParams = z.infer<typeof getEvaluationParamsSchema>;
+export type EvaluationDTO = z.infer<typeof evaluationDtoSchema>;
+export type EvaluationDetailDTO = z.infer<typeof evaluationDetailDtoSchema>;

@@ -10,7 +10,6 @@ import {
 
 export const assessmentRouter: Router = Router();
 
-// Aplica autenticação global exigida para o domínio
 assessmentRouter.use(requireAuth);
 
 assessmentRouter.post(

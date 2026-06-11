@@ -1,80 +1,87 @@
 import { prisma } from "../config/prisma.js";
-import { ScreeningResult } from "../generated/prisma/index.js";
+import type { Prisma, ScreeningResult } from "../generated/prisma/index.js";
 import type { GetEvaluationsQuery } from "../types/assessment.schema.js";
 
+const withSymptoms = { symptoms: { include: { symptom: true } } } as const;
+
+function assessmentDateFilter(
+  dataInicio?: string,
+  dataFim?: string,
+): Prisma.DateTimeFilter | undefined {
+  if (!dataInicio && !dataFim) return undefined;
+  const range: Prisma.DateTimeFilter = {};
+  if (dataInicio) range.gte = new Date(dataInicio);
+  if (dataFim) {
+    if (dataFim.length === 10) {
+      // date-only upper bound: include the whole day
+      const next = new Date(dataFim);
+      next.setUTCDate(next.getUTCDate() + 1);
+      range.lt = next;
+    } else {
+      range.lte = new Date(dataFim);
+    }
+  }
+  return range;
+}
+
 export const assessmentRepository = {
-  async findById(id: string) {
+  findById(id: string) {
     return prisma.assessment.findFirst({
       where: { id, deletedAt: null },
-      include: {
-        symptoms: {
-          include: { symptom: true },
-        },
-      },
+      include: withSymptoms,
     });
   },
 
-  async findMany(
+  findMany(
     filters: GetEvaluationsQuery,
-    userId: string,
-    isAdmin: boolean,
+    { userId, isAdmin }: { userId: string; isAdmin: boolean },
   ) {
-    const whereClause: any = {
-      deletedAt: null,
-    };
-
-    if (!isAdmin) {
-      whereClause.userId = userId;
-    }
-
-    if (filters.patientId) whereClause.patientId = filters.patientId;
-    if (filters.resultado)
-      whereClause.screeningResult = filters.resultado as ScreeningResult;
-
-    if (filters.dataInicio || filters.dataFim) {
-      whereClause.assessmentDate = {};
-      if (filters.dataInicio)
-        whereClause.assessmentDate.gte = new Date(filters.dataInicio);
-      if (filters.dataFim)
-        whereClause.assessmentDate.lte = new Date(filters.dataFim);
-    }
-
+    const dateFilter = assessmentDateFilter(
+      filters.dataInicio,
+      filters.dataFim,
+    );
     return prisma.assessment.findMany({
-      where: whereClause,
+      where: {
+        deletedAt: null,
+        ...(isAdmin ? {} : { userId }),
+        ...(filters.patientId && { patientId: filters.patientId }),
+        ...(filters.resultado && {
+          screeningResult: filters.resultado as ScreeningResult,
+        }),
+        ...(dateFilter && { assessmentDate: dateFilter }),
+      },
       orderBy: { assessmentDate: "desc" },
     });
   },
 
-  async create(data: {
+  // Minimal chronological rows used to derive per-patient session numbers
+  // at read time (numero_sessao is not stored — spec §3.3).
+  findIdsByPatients(patientIds: string[]) {
+    return prisma.assessment.findMany({
+      where: { patientId: { in: patientIds }, deletedAt: null },
+      select: { id: true, patientId: true },
+      orderBy: { assessmentDate: "asc" },
+    });
+  },
+
+  create(data: {
     userId: string;
     patientId: string;
     score: number;
     screeningResult: ScreeningResult;
     appliedThreshold: number;
-    sintomas: { id: string; presente: boolean }[];
+    symptoms: { symptomId: string; isPresent: boolean }[];
   }) {
-    return prisma.$transaction(async (tx) => {
-      const assessment = await tx.assessment.create({
-        data: {
-          userId: data.userId,
-          patientId: data.patientId,
-          score: data.score,
-          screeningResult: data.screeningResult,
-          appliedThreshold: data.appliedThreshold,
-        },
-      });
-
-      const recordsSintomas = data.sintomas.map((s) => ({
-        assessmentId: assessment.id,
-        symptomId: s.id,
-        isPresent: s.presente,
-      }));
-
-      await tx.assessmentSymptom.createMany({
-        data: recordsSintomas,
-      });
-
-      return assessment;
+    return prisma.assessment.create({
+      data: {
+        userId: data.userId,
+        patientId: data.patientId,
+        score: data.score,
+        screeningResult: data.screeningResult,
+        appliedThreshold: data.appliedThreshold,
+        symptoms: { createMany: { data: data.symptoms } },
+      },
+      include: withSymptoms,
     });
   },
 };
