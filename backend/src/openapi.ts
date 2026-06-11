@@ -4,6 +4,7 @@ import { symptomPaths } from "./routes/symptoms.docs.js";
 import { patientPaths } from "./routes/patient.docs.js";
 import { guardianPaths } from "./routes/guardian.docs.js";
 import { reportPaths } from "./routes/report.docs.js";
+import { assessmentPaths } from "./routes/assessment.docs.js";
 
 export const openApiDocument: oas31.OpenAPIObject = createDocument({
   openapi: "3.1.0",
@@ -23,6 +24,10 @@ export const openApiDocument: oas31.OpenAPIObject = createDocument({
     { name: "Symptoms", description: "Symptoms filtering." },
     { name: "Patients", description: "Patient records." },
     { name: "Guardians", description: "Patient guardians." },
+    {
+      name: "Evaluations",
+      description: "Fragile-X screening evaluations and scoring.",
+    },
     { name: "Reports", description: "Geração de relatórios agregados e PDFs." },
   ],
   security: [{ bearerAuth: [] }],
@@ -91,6 +96,7 @@ export const openApiDocument: oas31.OpenAPIObject = createDocument({
     ...symptomPaths,
     ...patientPaths,
     ...guardianPaths,
+    ...assessmentPaths,
     ...reportPaths,
   },
 });
