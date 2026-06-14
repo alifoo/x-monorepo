@@ -110,7 +110,7 @@ export function TopAppBar({ variant = 'menu', onBack }: TopAppBarProps) {
           onLogout={() => void handleLogout()}
           onCadastrarPaciente={() => {
             setMenuVisible(false);
-            router.push('/cadastro-paciente');
+            router.push('/register');
           }}
         />
       ) : null}
