@@ -31,7 +31,13 @@ export default function RegisterScreen() {
     router.replace('/(tabs)');
   };
 
-  const handleRegister = async (name: string, email: string, role: UserRole) => {
+  const handleRegister = async (
+    name: string,
+    email: string,
+    roles: UserRole[],
+    password: string,
+    confirmPassword: string,
+  ) => {
     setErrorMessage(null);
 
     if (!name.trim()) {
@@ -44,9 +50,29 @@ export default function RegisterScreen() {
       return;
     }
 
+    if (roles.length === 0) {
+      setErrorMessage('Selecione ao menos um tipo de usuário.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage('As senhas não coincidem.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await inviteUser({ name: name.trim(), email: email.trim(), role });
+      await inviteUser({
+        name: name.trim(),
+        email: email.trim(),
+        roles,
+        password,
+      });
       setSuccessVisible(true);
     } catch (error) {
       if (error instanceof AuthError) {
@@ -75,7 +101,7 @@ export default function RegisterScreen() {
       <AuthInfoModal
         visible={successVisible}
         title="Usuário cadastrado"
-        message="O profissional foi cadastrado e receberá um convite por e-mail para definir a senha."
+        message="O profissional foi cadastrado e já pode entrar com o e-mail e a senha definidos."
         onClose={() => {
           setSuccessVisible(false);
           goBack();

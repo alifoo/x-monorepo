@@ -14,7 +14,9 @@ type RegisterFormProps = {
   onSubmit: (
     name: string,
     email: string,
-    role: UserRole,
+    roles: UserRole[],
+    password: string,
+    confirmPassword: string,
   ) => void | Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -34,7 +36,17 @@ export function RegisterForm({
 }: RegisterFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>('healthcare_professional');
+  const [roles, setRoles] = useState<UserRole[]>(['healthcare_professional']);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const toggleRole = (value: UserRole) => {
+    setRoles((prev) =>
+      prev.includes(value)
+        ? prev.filter((r) => r !== value)
+        : [...prev, value],
+    );
+  };
   const placeholderTextColor = useThemeColor({}, 'placeholderTextColor');
   const labelColor = useThemeColor({}, 'label');
   const errorColor = useThemeColor({}, 'error');
@@ -71,11 +83,11 @@ export function RegisterForm({
       />
 
       <ThemedText style={[formStyles.label, { color: labelColor }]}>
-        TIPO DE USUÁRIO
+        TIPO DE USUÁRIO (selecione um ou mais)
       </ThemedText>
       <View style={styles.rolesRow}>
         {ROLE_OPTIONS.map((option) => {
-          const selected = role === option.value;
+          const selected = roles.includes(option.value);
           return (
             <TouchableOpacity
               key={option.value}
@@ -86,7 +98,7 @@ export function RegisterForm({
                   backgroundColor: selected ? buttonColor : inputBackground,
                 },
               ]}
-              onPress={() => setRole(option.value)}
+              onPress={() => toggleRole(option.value)}
               activeOpacity={0.85}
             >
               <ThemedText
@@ -102,6 +114,30 @@ export function RegisterForm({
         })}
       </View>
 
+      <ThemedText style={[formStyles.label, { color: labelColor }]}>
+        SENHA
+      </ThemedText>
+      <FormInput
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Mínimo de 6 caracteres"
+        placeholderTextColor={placeholderTextColor}
+        secureTextEntry
+        iconName="lock.fill"
+      />
+
+      <ThemedText style={[formStyles.label, { color: labelColor }]}>
+        CONFIRMAR SENHA
+      </ThemedText>
+      <FormInput
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        placeholder="Digite a senha novamente"
+        placeholderTextColor={placeholderTextColor}
+        secureTextEntry
+        iconName="lock.fill"
+      />
+
       {errorMessage ? (
         <ThemedText style={[formStyles.errorText, { color: errorColor }]}>
           {errorMessage}
@@ -110,7 +146,9 @@ export function RegisterForm({
 
       <View style={formStyles.actionsSection}>
         <FormButton
-          onPress={() => void onSubmit(name, email, role)}
+          onPress={() =>
+            void onSubmit(name, email, roles, password, confirmPassword)
+          }
           disabled={isLoading}
           label={isLoading ? 'Cadastrando...' : 'Cadastrar usuário'}
           grouped

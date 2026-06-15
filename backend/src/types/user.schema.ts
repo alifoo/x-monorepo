@@ -19,7 +19,13 @@ export const inviteUserSchema = z
   .object({
     name: z.string().min(1).meta({ example: "Maria Silva" }),
     email: z.email().meta({ example: "maria@clinica.br" }),
-    role: z.string().min(1).meta({ example: "healthcare_professional" }),
+    roles: z
+      .array(z.string().min(1))
+      .min(1)
+      .meta({ example: ["healthcare_professional"] }),
+    // Used only in non-production: the user is created already with this
+    // password. In production the user is invited by email and sets their own.
+    password: z.string().min(6).optional().meta({ example: "senha123" }),
   })
   .meta({ id: "InviteUser" });
 

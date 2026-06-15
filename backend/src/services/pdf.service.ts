@@ -37,8 +37,8 @@ const PALETTE = {
   bandText: "#FFFFFF",
   bandSubtle: "#C7CDD6",
   accent: "#334155",
-  suspected: "#92400E",
-  lowRisk: "#4D7C0F",
+  suspected: "#1F2937",
+  lowRisk: "#64748B",
   cardBg: "#F3F4F6",
 } as const;
 

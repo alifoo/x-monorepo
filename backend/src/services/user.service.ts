@@ -36,7 +36,8 @@ export const userService = {
   async invite({
     name,
     email,
-    role,
+    roles,
+    password,
   }: InviteUserParams): Promise<UserDTO | null> {
     const authResult =
       env.NODE_ENV === "production"
@@ -47,12 +48,12 @@ export const userService = {
             email,
             email_confirm: true,
             user_metadata: { name },
+            ...(password ? { password } : {}),
           });
     if (authResult.error) throw authResult.error;
 
     const userId = authResult.data.user.id;
-    const roleRow = await userRepository.findRoleByName(role);
-    await userRepository.assignRole(userId, roleRow.id);
+    await userService.setRoles(userId, roles);
     return userService.getById(userId);
   },
 
