@@ -18,7 +18,7 @@ export type TopAppBarProps = {
 
 export function TopAppBar({ variant = 'menu', onBack }: TopAppBarProps) {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const [menuVisible, setMenuVisible] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -108,10 +108,14 @@ export function TopAppBar({ variant = 'menu', onBack }: TopAppBarProps) {
           isLoggingOut={isLoggingOut}
           onClose={() => setMenuVisible(false)}
           onLogout={() => void handleLogout()}
-          onCadastrarPaciente={() => {
-            setMenuVisible(false);
-            router.push('/cadastro-paciente');
-          }}
+          onCadastrarUsuario={
+            isAdmin
+              ? () => {
+                  setMenuVisible(false);
+                  router.push('/register');
+                }
+              : undefined
+          }
         />
       ) : null}
     </>

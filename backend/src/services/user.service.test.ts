@@ -24,6 +24,7 @@ describe("userService.getById", () => {
       name: "Ana",
       email: "ana@example.com",
       createdAt: new Date(),
+      roles: [{ role: { name: "administrator" } }],
     } as never);
 
     const result = await userService.getById("u-1");
@@ -32,6 +33,7 @@ describe("userService.getById", () => {
       id: "u-1",
       name: "Ana",
       email: "ana@example.com",
+      roles: ["administrator"],
     });
   });
 
@@ -63,6 +65,7 @@ describe("userService.me", () => {
       name: "Ana",
       email: "ana@example.com",
       createdAt: new Date(),
+      roles: [{ role: { name: "administrator" } }],
     } as never);
 
     const result = await userService.getById("u-1");
@@ -71,6 +74,7 @@ describe("userService.me", () => {
       id: "u-1",
       name: "Ana",
       email: "ana@example.com",
+      roles: ["administrator"],
     });
   });
 

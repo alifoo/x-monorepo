@@ -32,11 +32,11 @@ function RootLayoutNav() {
           <Stack.Screen name="cadastro-paciente" />
           <Stack.Screen name="checklist-clinico" />
           <Stack.Screen name="resultado-avaliacao" />
+          <Stack.Screen name="register" />
         </Stack.Protected>
 
         <Stack.Protected guard={!user}>
           <Stack.Screen name="login" />
-          <Stack.Screen name="register" />
         </Stack.Protected>
       </Stack>
       <StatusBar style="auto" />

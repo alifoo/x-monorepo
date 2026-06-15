@@ -1,4 +1,20 @@
-export type PatientSex = 'm' | 'f';
+export type UserRole = "administrator" | "healthcare_professional";
+
+export type UserDto = {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+};
+
+export type InviteUserInput = {
+  name: string;
+  email: string;
+  roles: UserRole[];
+  password: string;
+};
+
+export type PatientSex = "m" | "f";
 
 export type PatientDto = {
   id: string;
@@ -23,7 +39,7 @@ export type CreatePatientInput = {
   };
 };
 
-export type SymptomCategory = 'behavioral' | 'cognitive' | 'physical';
+export type SymptomCategory = "behavioral" | "cognitive" | "physical";
 
 export type SymptomDto = {
   id: string;
@@ -32,7 +48,7 @@ export type SymptomDto = {
   weight?: number | string;
 };
 
-export type ScreeningResult = 'suspected' | 'low_risk';
+export type ScreeningResult = "suspected" | "low_risk";
 
 export type EvaluationDto = {
   id: string;
