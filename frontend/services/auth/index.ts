@@ -7,7 +7,6 @@ export {
   type AuthService,
   type AuthUser,
   type LoginCredentials,
-  type RegisterCredentials,
 } from './types';
 
 export const defaultAuthService = getSupabaseAuthService();

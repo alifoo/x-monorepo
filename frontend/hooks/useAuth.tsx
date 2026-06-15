@@ -9,20 +9,14 @@ import {
 } from 'react';
 
 import { defaultAuthService } from '@/services/auth';
-import type {
-  AuthService,
-  AuthUser,
-  LoginCredentials,
-  RegisterCredentials,
-} from '@/services/auth';
+import type { AuthService, AuthUser, LoginCredentials } from '@/services/auth';
 
 type AuthContextValue = {
   user: AuthUser | null;
   isLoading: boolean;
   isSigningIn: boolean;
-  isRegistering: boolean;
+  isAdmin: boolean;
   signIn: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -37,7 +31,6 @@ export function AuthProvider({ children, authService = defaultAuthService }: Aut
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,35 +62,23 @@ export function AuthProvider({ children, authService = defaultAuthService }: Aut
     [authService],
   );
 
-  const register = useCallback(
-    async (credentials: RegisterCredentials) => {
-      setIsRegistering(true);
-      try {
-        const authenticatedUser = await authService.register(credentials);
-        setUser(authenticatedUser);
-      } finally {
-        setIsRegistering(false);
-      }
-    },
-    [authService],
-  );
-
   const signOut = useCallback(async () => {
     await authService.signOut();
     setUser(null);
   }, [authService]);
+
+  const isAdmin = !!user?.roles.includes('administrator');
 
   const value = useMemo(
     () => ({
       user,
       isLoading,
       isSigningIn,
-      isRegistering,
+      isAdmin,
       signIn,
-      register,
       signOut,
     }),
-    [user, isLoading, isSigningIn, isRegistering, signIn, register, signOut],
+    [user, isLoading, isSigningIn, isAdmin, signIn, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -12,7 +12,7 @@ type ProfileMenuSheetProps = {
   isLoggingOut?: boolean;
   onClose: () => void;
   onLogout: () => void;
-  onCadastrarPaciente?: () => void;
+  onCadastrarUsuario?: () => void;
 };
 
 export function ProfileMenuSheet({
@@ -22,7 +22,7 @@ export function ProfileMenuSheet({
   isLoggingOut = false,
   onClose,
   onLogout,
-  onCadastrarPaciente,
+  onCadastrarUsuario,
 }: ProfileMenuSheetProps) {
   const titleColor = useThemeColor({}, 'text');
   const labelColor = useThemeColor({}, 'label');
@@ -65,10 +65,10 @@ export function ProfileMenuSheet({
         <ThemedText style={[styles.name, { color: titleColor }]}>{displayName}</ThemedText>
         <ThemedText style={[styles.email, { color: labelColor }]}>{displayEmail}</ThemedText>
 
-        {onCadastrarPaciente ? (
+        {onCadastrarUsuario ? (
           <TouchableOpacity
             style={[styles.actionButton, { borderColor: actionBorderColor }]}
-            onPress={onCadastrarPaciente}
+            onPress={onCadastrarUsuario}
             activeOpacity={0.85}
           >
             <ThemedText style={[styles.actionLabel, { color: actionTextColor }]}>

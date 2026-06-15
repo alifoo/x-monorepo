@@ -28,10 +28,13 @@ export const userDtoSchema = z
     id: z.uuid(),
     name: z.string().meta({ example: "Maria Silva" }),
     email: z.email().meta({ example: "maria@clinica.br" }),
+    roles: z.array(z.string()).meta({ example: ["healthcare_professional"] }),
   })
   .meta({ id: "User" });
 
-export type UserDTO = Pick<User, "id" | "name" | "email">;
+export type UserDTO = Pick<User, "id" | "name" | "email"> & {
+  roles: string[];
+};
 export type GetUserParams = z.infer<typeof getUserParamsSchema>;
 export type UpdateUserParams = z.infer<typeof updateUserSchema>;
 export type InviteUserParams = z.infer<typeof inviteUserSchema>;

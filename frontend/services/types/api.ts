@@ -1,3 +1,18 @@
+export type UserRole = 'administrator' | 'healthcare_professional';
+
+export type UserDto = {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+};
+
+export type InviteUserInput = {
+  name: string;
+  email: string;
+  role: UserRole;
+};
+
 export type PatientSex = 'm' | 'f';
 
 export type PatientDto = {

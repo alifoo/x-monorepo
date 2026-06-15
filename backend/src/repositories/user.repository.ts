@@ -2,11 +2,28 @@ import { prisma } from "../config/prisma.js";
 
 export const userRepository = {
   // Reads exclude soft-deleted users (deletedAt set) everywhere.
+  // Active role names are included so callers can expose them in the DTO.
   findById(id: string) {
-    return prisma.user.findFirst({ where: { id, deletedAt: null } });
+    return prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      include: {
+        roles: {
+          where: { status: "active" },
+          select: { role: { select: { name: true } } },
+        },
+      },
+    });
   },
   findAll() {
-    return prisma.user.findMany({ where: { deletedAt: null } });
+    return prisma.user.findMany({
+      where: { deletedAt: null },
+      include: {
+        roles: {
+          where: { status: "active" },
+          select: { role: { select: { name: true } } },
+        },
+      },
+    });
   },
   // Distinct, non-deleted users holding an active administrator role.
   countActiveAdmins() {
