@@ -19,15 +19,10 @@ async function sharePdfOnNative(fileUri: string): Promise<void> {
 
 async function savePdfOnNative(buffer: ArrayBuffer): Promise<void> {
   const file = new File(Paths.document, `relatorio-${Date.now()}.pdf`);
-  const writer = file.writableStream().getWriter();
-
-  try {
-    await writer.write(new Uint8Array(buffer));
-    await writer.close();
-  } catch (error) {
-    await writer.abort();
-    throw error;
-  }
+  // Synchronous write — avoids file.writableStream(), which relies on a global
+  // WritableStream that does not exist in the iOS/Hermes runtime.
+  file.create({ overwrite: true });
+  file.write(new Uint8Array(buffer));
 
   await sharePdfOnNative(file.uri);
 }
